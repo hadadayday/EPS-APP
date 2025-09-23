@@ -1,0 +1,5 @@
+{
+  "name": "Gestion des Élèves",
+  "description": "Une application web pour suivre la présence, l'absence et les évaluations des élèves pour les cours, conçue pour les enseignants.",
+  "requestFramePermissions": []
+}
