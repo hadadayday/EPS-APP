@@ -312,12 +312,12 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({ title, onB
     const baseHeaders = ['N°', 'Noms & Prénoms', 'Code Massar', 'Date de Naissance', ...selectedClass.sessionDates.map((_, i) => `S${i + 1}`)];
 
     if (evaluationType === 'gym') {
+        // Fix: Explicitly type the accumulator 'sum' as a number to resolve ambiguity in type inference for the reduce function.
         const getNoteFinaleGym = (evaluation: Evaluation) => [
             evaluation.capaciteHabiliteMotriceGym,
             evaluation.connaissancesConceptuellesGym,
             evaluation.connaissancesComportementalesGym,
-        // FIX: Operator '+' cannot be applied to types 'string | number' and 'number'. An evaluation value can be an empty string, so it must be cast to a Number before addition.
-        ].reduce((sum, v) => sum + Number(v), 0);
+        ].reduce((sum: number, v) => sum + Number(v || 0), 0);
 
         headers = [...baseHeaders, 'Capacité sportive et habileté motrice', 'Connaissances Conceptuelles', 'Connaissances Comportementales', 'Note Finale'];
         studentRows = selectedClass.students.map((s, i) => [
@@ -326,10 +326,10 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({ title, onB
         ].map(escapeCSV).join(','));
 
     } else if (evaluationType === 'marquage') {
+        // Fix: Explicitly type the accumulator 'sum' as a number to resolve ambiguity in type inference for the reduce function.
         const getNoteFinaleMarquage = (evaluation: Evaluation) => [
             evaluation.capaciteSportiveIndividuelle, evaluation.capaciteSportiveCollective, evaluation.connaissancesConceptuellesMarquage, evaluation.connaissancesComportementalesMarquage
-        // FIX: Operator '+' cannot be applied to types 'string | number' and 'number'. An evaluation value can be an empty string, so it must be cast to a Number before addition.
-        ].reduce((sum, v) => sum + Number(v), 0);
+        ].reduce((sum: number, v) => sum + Number(v || 0), 0);
         
         headers = [...baseHeaders, 'Capacité Sportive (Individuelle)', 'Capacité Sportive (Collective)', 'Connaissances Conceptuelles', 'Connaissances Comportementales', 'Note Finale'];
         studentRows = selectedClass.students.map((s, i) => [
@@ -338,13 +338,13 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({ title, onB
         ].map(escapeCSV).join(','));
     
     } else if (evaluationType === 'athletisme') {
+        // Fix: Explicitly type the accumulator 'sum' as a number to resolve ambiguity in type inference for the reduce function.
         const getNoteFinaleAthletisme = (evaluation: Evaluation) => [
             evaluation.capaciteSportive,
             evaluation.habiliteMotrice,
             evaluation.connaissancesConceptuelles,
             evaluation.connaissancesComportementales
-        // FIX: Operator '+' cannot be applied to types 'string | number' and 'number'. An evaluation value can be an empty string, so it must be cast to a Number before addition.
-        ].reduce((sum, v) => sum + Number(v), 0);
+        ].reduce((sum: number, v) => sum + Number(v || 0), 0);
 
         headers = [...baseHeaders, 'Capacité sportive', 'Habilité motrice', 'Connaissances conceptuelles', 'Connaissances comportementales', 'Note Finale'];
         studentRows = selectedClass.students.map((s, i) => [
@@ -353,10 +353,10 @@ export const StudentManagement: React.FC<StudentManagementProps> = ({ title, onB
         ].map(escapeCSV).join(','));
 
     } else { // default
+        // Fix: Explicitly type the accumulator 'sum' as a number to resolve ambiguity in type inference for the reduce function.
         const getNoteFinaleDefault = (evaluation: Evaluation) => [
             evaluation.capaciteSportive, evaluation.habiliteMotrice, evaluation.connaissancesConceptuelles, evaluation.connaissancesComportementales
-        // FIX: Operator '+' cannot be applied to types 'string | number' and 'number'. An evaluation value can be an empty string, so it must be cast to a Number before addition.
-        ].reduce((sum, v) => sum + Number(v), 0);
+        ].reduce((sum: number, v) => sum + Number(v || 0), 0);
 
         headers = [...baseHeaders, 'Capacité sportive', 'Habilité motrice', 'Connaissances conceptuelles', 'Connaissances comportementales', 'Note Finale'];
         studentRows = selectedClass.students.map((s, i) => [

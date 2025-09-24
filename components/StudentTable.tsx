@@ -32,6 +32,8 @@ export const StudentTable: React.FC<StudentTableProps> = ({ schoolClass, onUpdat
 
   const is2emeAnneeAthletisme = evaluationType === 'athletisme' && selectedYearName === '2éme année';
   const is3emeAnneeAthletisme = evaluationType === 'athletisme' && selectedYearName === '3éme année';
+  const is2emeAnneeGym = evaluationType === 'gym' && selectedYearName === '2éme année';
+  const is3emeAnneeGym = evaluationType === 'gym' && selectedYearName === '3éme année';
 
   useEffect(() => {
     const tableEl = tableRef.current;
@@ -157,6 +159,26 @@ export const StudentTable: React.FC<StudentTableProps> = ({ schoolClass, onUpdat
     }
   };
 
+  const handleEvaluationChange = (studentId: string, field: string, value: string, max: number) => {
+    if (value === '') {
+      onUpdateStudent(studentId, field, '');
+      return;
+    }
+    let numValue = Number(value);
+    
+    if (isNaN(numValue)) {
+      return; // Do not update state if input is not a valid number
+    }
+
+    if (numValue > max) {
+      numValue = max;
+    }
+    if (numValue < 0) {
+      numValue = 0;
+    }
+    onUpdateStudent(studentId, field, numValue);
+  };
+
   const attendanceOptions = [
     { value: AttendanceStatus.Present, label: 'P', color: 'bg-green-100 text-green-800' },
     { value: AttendanceStatus.Absent, label: 'A', color: 'bg-red-100 text-red-800' },
@@ -197,7 +219,11 @@ export const StudentTable: React.FC<StudentTableProps> = ({ schoolClass, onUpdat
   };
 
   const evaluationInputClassGym = (value: number | '', max: number) => {
-    const baseClasses = "w-full h-full text-center px-1 rounded-md shadow-sm bg-pink-100 text-pink-900 border-transparent focus:ring-indigo-500 focus:border-indigo-500";
+    let colorClasses = "bg-pink-100 text-pink-900"; // Default
+    if (is2emeAnneeGym || is3emeAnneeGym) {
+      colorClasses = "bg-blue-100 text-blue-900";
+    }
+    const baseClasses = `w-full h-full text-center px-1 rounded-md shadow-sm ${colorClasses} border-transparent focus:ring-indigo-500 focus:border-indigo-500`;
     if (isEvaluationValidMarquage(value, max)) {
         return baseClasses;
     }
@@ -373,7 +399,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({ schoolClass, onUpdat
       )}
       <table ref={tableRef} className="min-w-full divide-y divide-gray-200 border-collapse">
         {evaluationType === 'marquage' ? renderMarquageEvaluationHeaders() : 
-         evaluationType === 'gym' ? renderDefaultEvaluationHeaders(evaluationHeadersGym, 'bg-pink-50') : 
+         evaluationType === 'gym' ? renderDefaultEvaluationHeaders(evaluationHeadersGym, is2emeAnneeGym || is3emeAnneeGym ? 'bg-blue-50' : 'bg-pink-50') : 
          evaluationType === 'athletisme' ? renderDefaultEvaluationHeaders(evaluationHeadersAthletisme, is3emeAnneeAthletisme ? 'bg-green-50' : is2emeAnneeAthletisme ? 'bg-blue-50' : 'bg-red-50') :
          renderDefaultEvaluationHeaders(evaluationHeadersDefault, 'bg-blue-50')}
         <tbody className="bg-white divide-y divide-gray-200">
@@ -410,25 +436,25 @@ export const StudentTable: React.FC<StudentTableProps> = ({ schoolClass, onUpdat
                 <>
                     <td className="px-1 py-1 whitespace-nowrap text-sm text-gray-500 bg-orange-50 border-l border-gray-200">
                         <div className="relative h-full flex items-center">
-                            <input type="number" min="0" max="6" value={student.evaluation.capaciteSportiveIndividuelle} onChange={(e) => onUpdateStudent(student.id, 'evaluation.capaciteSportiveIndividuelle', e.target.value === '' ? '' : Number(e.target.value))} className={evaluationInputClassMarquage(student.evaluation.capaciteSportiveIndividuelle, 6)} />
+                            <input type="number" min="0" max="6" value={student.evaluation.capaciteSportiveIndividuelle} onChange={(e) => handleEvaluationChange(student.id, 'evaluation.capaciteSportiveIndividuelle', e.target.value, 6)} className={evaluationInputClassMarquage(student.evaluation.capaciteSportiveIndividuelle, 6)} />
                             <span className="absolute right-2 text-gray-500 pointer-events-none">/6</span>
                         </div>
                     </td>
                     <td className="px-1 py-1 whitespace-nowrap text-sm text-gray-500 bg-orange-50">
                         <div className="relative h-full flex items-center">
-                            <input type="number" min="0" max="8" value={student.evaluation.capaciteSportiveCollective} onChange={(e) => onUpdateStudent(student.id, 'evaluation.capaciteSportiveCollective', e.target.value === '' ? '' : Number(e.target.value))} className={evaluationInputClassMarquage(student.evaluation.capaciteSportiveCollective, 8)} />
+                            <input type="number" min="0" max="8" value={student.evaluation.capaciteSportiveCollective} onChange={(e) => handleEvaluationChange(student.id, 'evaluation.capaciteSportiveCollective', e.target.value, 8)} className={evaluationInputClassMarquage(student.evaluation.capaciteSportiveCollective, 8)} />
                             <span className="absolute right-2 text-gray-500 pointer-events-none">/8</span>
                         </div>
                     </td>
                     <td className="px-1 py-1 whitespace-nowrap text-sm text-gray-500 bg-orange-50">
                         <div className="relative h-full flex items-center">
-                            <input type="number" min="0" max="3" value={student.evaluation.connaissancesConceptuellesMarquage} onChange={(e) => onUpdateStudent(student.id, 'evaluation.connaissancesConceptuellesMarquage', e.target.value === '' ? '' : Number(e.target.value))} className={evaluationInputClassMarquage(student.evaluation.connaissancesConceptuellesMarquage, 3)} />
+                            <input type="number" min="0" max="3" value={student.evaluation.connaissancesConceptuellesMarquage} onChange={(e) => handleEvaluationChange(student.id, 'evaluation.connaissancesConceptuellesMarquage', e.target.value, 3)} className={evaluationInputClassMarquage(student.evaluation.connaissancesConceptuellesMarquage, 3)} />
                             <span className="absolute right-2 text-gray-500 pointer-events-none">/3</span>
                         </div>
                     </td>
                     <td className="px-1 py-1 whitespace-nowrap text-sm text-gray-500 bg-orange-50">
                         <div className="relative h-full flex items-center">
-                            <input type="number" min="0" max="3" value={student.evaluation.connaissancesComportementalesMarquage} onChange={(e) => onUpdateStudent(student.id, 'evaluation.connaissancesComportementalesMarquage', e.target.value === '' ? '' : Number(e.target.value))} className={evaluationInputClassMarquage(student.evaluation.connaissancesComportementalesMarquage, 3)} />
+                            <input type="number" min="0" max="3" value={student.evaluation.connaissancesComportementalesMarquage} onChange={(e) => handleEvaluationChange(student.id, 'evaluation.connaissancesComportementalesMarquage', e.target.value, 3)} className={evaluationInputClassMarquage(student.evaluation.connaissancesComportementalesMarquage, 3)} />
                             <span className="absolute right-2 text-gray-500 pointer-events-none">/3</span>
                         </div>
                     </td>
@@ -438,25 +464,25 @@ export const StudentTable: React.FC<StudentTableProps> = ({ schoolClass, onUpdat
                 </>
               ) : evaluationType === 'gym' ? (
                 <>
-                    <td className="px-1 py-1 whitespace-nowrap text-sm text-gray-500 bg-pink-50 border-l border-gray-200">
+                    <td className={`px-1 py-1 whitespace-nowrap text-sm text-gray-500 ${is2emeAnneeGym || is3emeAnneeGym ? 'bg-blue-50' : 'bg-pink-50'} border-l border-gray-200`}>
                         <div className="relative h-full flex items-center">
-                            <input type="number" min="0" max="14" value={student.evaluation.capaciteHabiliteMotriceGym} onChange={(e) => onUpdateStudent(student.id, 'evaluation.capaciteHabiliteMotriceGym', e.target.value === '' ? '' : Number(e.target.value))} className={evaluationInputClassGym(student.evaluation.capaciteHabiliteMotriceGym, 14)} />
-                            <span className="absolute right-2 text-gray-500 pointer-events-none">/14</span>
+                            <input type="number" min="0" max={is3emeAnneeGym ? 12 : (is2emeAnneeGym ? 13 : 14)} value={student.evaluation.capaciteHabiliteMotriceGym} onChange={(e) => handleEvaluationChange(student.id, 'evaluation.capaciteHabiliteMotriceGym', e.target.value, is3emeAnneeGym ? 12 : (is2emeAnneeGym ? 13 : 14))} className={evaluationInputClassGym(student.evaluation.capaciteHabiliteMotriceGym, is3emeAnneeGym ? 12 : (is2emeAnneeGym ? 13 : 14))} />
+                            <span className="absolute right-2 text-gray-500 pointer-events-none">/{is3emeAnneeGym ? 12 : (is2emeAnneeGym ? 13 : 14)}</span>
                         </div>
                     </td>
-                    <td className="px-1 py-1 whitespace-nowrap text-sm text-gray-500 bg-pink-50">
+                    <td className={`px-1 py-1 whitespace-nowrap text-sm text-gray-500 ${is2emeAnneeGym || is3emeAnneeGym ? 'bg-blue-50' : 'bg-pink-50'}`}>
                          <div className="relative h-full flex items-center">
-                            <input type="number" min="0" max="3" value={student.evaluation.connaissancesConceptuellesGym} onChange={(e) => onUpdateStudent(student.id, 'evaluation.connaissancesConceptuellesGym', e.target.value === '' ? '' : Number(e.target.value))} className={evaluationInputClassGym(student.evaluation.connaissancesConceptuellesGym, 3)} />
+                            <input type="number" min="0" max="3" value={student.evaluation.connaissancesConceptuellesGym} onChange={(e) => handleEvaluationChange(student.id, 'evaluation.connaissancesConceptuellesGym', e.target.value, 3)} className={evaluationInputClassGym(student.evaluation.connaissancesConceptuellesGym, 3)} />
                             <span className="absolute right-2 text-gray-500 pointer-events-none">/3</span>
                         </div>
                     </td>
-                    <td className="px-1 py-1 whitespace-nowrap text-sm text-gray-500 bg-pink-50">
+                    <td className={`px-1 py-1 whitespace-nowrap text-sm text-gray-500 ${is2emeAnneeGym || is3emeAnneeGym ? 'bg-blue-50' : 'bg-pink-50'}`}>
                          <div className="relative h-full flex items-center">
-                            <input type="number" min="0" max="3" value={student.evaluation.connaissancesComportementalesGym} onChange={(e) => onUpdateStudent(student.id, 'evaluation.connaissancesComportementalesGym', e.target.value === '' ? '' : Number(e.target.value))} className={evaluationInputClassGym(student.evaluation.connaissancesComportementalesGym, 3)} />
-                            <span className="absolute right-2 text-gray-500 pointer-events-none">/3</span>
+                            <input type="number" min="0" max={is3emeAnneeGym ? 5 : (is2emeAnneeGym ? 4 : 3)} value={student.evaluation.connaissancesComportementalesGym} onChange={(e) => handleEvaluationChange(student.id, 'evaluation.connaissancesComportementalesGym', e.target.value, is3emeAnneeGym ? 5 : (is2emeAnneeGym ? 4 : 3))} className={evaluationInputClassGym(student.evaluation.connaissancesComportementalesGym, is3emeAnneeGym ? 5 : (is2emeAnneeGym ? 4 : 3))} />
+                            <span className="absolute right-2 text-gray-500 pointer-events-none">/{is3emeAnneeGym ? 5 : (is2emeAnneeGym ? 4 : 3)}</span>
                         </div>
                     </td>
-                    <td className="px-2 py-2 whitespace-nowrap text-sm text-center font-bold text-gray-900 bg-pink-100 border-r border-gray-200">
+                    <td className={`px-2 py-2 whitespace-nowrap text-sm text-center font-bold text-gray-900 ${is2emeAnneeGym || is3emeAnneeGym ? 'bg-blue-100' : 'bg-pink-100'} border-r border-gray-200`}>
                         {getNoteFinaleGym(student.evaluation)} / 20
                     </td>
                 </>
@@ -464,25 +490,25 @@ export const StudentTable: React.FC<StudentTableProps> = ({ schoolClass, onUpdat
                 <>
                     <td className={`px-1 py-1 whitespace-nowrap text-sm text-gray-500 ${is3emeAnneeAthletisme ? 'bg-green-50' : is2emeAnneeAthletisme ? 'bg-blue-50' : 'bg-red-50'} border-l border-gray-200`}>
                         <div className="relative h-full flex items-center">
-                            <input type="number" min="0" max="6" onKeyDown={preventInvalidIntegerChars} value={student.evaluation.capaciteSportive} onChange={(e) => onUpdateStudent(student.id, 'evaluation.capaciteSportive', e.target.value === '' ? '' : Number(e.target.value))} className={evaluationInputClassAthletisme(student.evaluation.capaciteSportive, 6)} />
+                            <input type="number" min="0" max="6" onKeyDown={preventInvalidIntegerChars} value={student.evaluation.capaciteSportive} onChange={(e) => handleEvaluationChange(student.id, 'evaluation.capaciteSportive', e.target.value, 6)} className={evaluationInputClassAthletisme(student.evaluation.capaciteSportive, 6)} />
                             <span className="absolute right-2 text-gray-500 pointer-events-none">/6</span>
                         </div>
                     </td>
                     <td className={`px-1 py-1 whitespace-nowrap text-sm text-gray-500 ${is3emeAnneeAthletisme ? 'bg-green-50' : is2emeAnneeAthletisme ? 'bg-blue-50' : 'bg-red-50'}`}>
                         <div className="relative h-full flex items-center">
-                            <input type="number" min="0" max={is3emeAnneeAthletisme ? 6 : (is2emeAnneeAthletisme ? 7 : 8)} onKeyDown={preventInvalidIntegerChars} value={student.evaluation.habiliteMotrice} onChange={(e) => onUpdateStudent(student.id, 'evaluation.habiliteMotrice', e.target.value === '' ? '' : Number(e.target.value))} className={evaluationInputClassAthletisme(student.evaluation.habiliteMotrice, is3emeAnneeAthletisme ? 6 : (is2emeAnneeAthletisme ? 7 : 8))} />
+                            <input type="number" min="0" max={is3emeAnneeAthletisme ? 6 : (is2emeAnneeAthletisme ? 7 : 8)} onKeyDown={preventInvalidIntegerChars} value={student.evaluation.habiliteMotrice} onChange={(e) => handleEvaluationChange(student.id, 'evaluation.habiliteMotrice', e.target.value, is3emeAnneeAthletisme ? 6 : (is2emeAnneeAthletisme ? 7 : 8))} className={evaluationInputClassAthletisme(student.evaluation.habiliteMotrice, is3emeAnneeAthletisme ? 6 : (is2emeAnneeAthletisme ? 7 : 8))} />
                             <span className="absolute right-2 text-gray-500 pointer-events-none">/{is3emeAnneeAthletisme ? 6 : (is2emeAnneeAthletisme ? 7 : 8)}</span>
                         </div>
                     </td>
                     <td className={`px-1 py-1 whitespace-nowrap text-sm text-gray-500 ${is3emeAnneeAthletisme ? 'bg-green-50' : is2emeAnneeAthletisme ? 'bg-blue-50' : 'bg-red-50'}`}>
                         <div className="relative h-full flex items-center">
-                            <input type="number" min="0" max="3" onKeyDown={preventInvalidIntegerChars} value={student.evaluation.connaissancesConceptuelles} onChange={(e) => onUpdateStudent(student.id, 'evaluation.connaissancesConceptuelles', e.target.value === '' ? '' : Number(e.target.value))} className={evaluationInputClassAthletisme(student.evaluation.connaissancesConceptuelles, 3)} />
+                            <input type="number" min="0" max="3" onKeyDown={preventInvalidIntegerChars} value={student.evaluation.connaissancesConceptuelles} onChange={(e) => handleEvaluationChange(student.id, 'evaluation.connaissancesConceptuelles', e.target.value, 3)} className={evaluationInputClassAthletisme(student.evaluation.connaissancesConceptuelles, 3)} />
                             <span className="absolute right-2 text-gray-500 pointer-events-none">/3</span>
                         </div>
                     </td>
                     <td className={`px-1 py-1 whitespace-nowrap text-sm text-gray-500 ${is3emeAnneeAthletisme ? 'bg-green-50' : is2emeAnneeAthletisme ? 'bg-blue-50' : 'bg-red-50'}`}>
                         <div className="relative h-full flex items-center">
-                            <input type="number" min="0" max={is3emeAnneeAthletisme ? 5 : (is2emeAnneeAthletisme ? 4 : 3)} onKeyDown={preventInvalidIntegerChars} value={student.evaluation.connaissancesComportementales} onChange={(e) => onUpdateStudent(student.id, 'evaluation.connaissancesComportementales', e.target.value === '' ? '' : Number(e.target.value))} className={evaluationInputClassAthletisme(student.evaluation.connaissancesComportementales, is3emeAnneeAthletisme ? 5 : (is2emeAnneeAthletisme ? 4 : 3))} />
+                            <input type="number" min="0" max={is3emeAnneeAthletisme ? 5 : (is2emeAnneeAthletisme ? 4 : 3)} onKeyDown={preventInvalidIntegerChars} value={student.evaluation.connaissancesComportementales} onChange={(e) => handleEvaluationChange(student.id, 'evaluation.connaissancesComportementales', e.target.value, is3emeAnneeAthletisme ? 5 : (is2emeAnneeAthletisme ? 4 : 3))} className={evaluationInputClassAthletisme(student.evaluation.connaissancesComportementales, is3emeAnneeAthletisme ? 5 : (is2emeAnneeAthletisme ? 4 : 3))} />
                             <span className="absolute right-2 text-gray-500 pointer-events-none">/{is3emeAnneeAthletisme ? 5 : (is2emeAnneeAthletisme ? 4 : 3)}</span>
                         </div>
                     </td>
@@ -493,16 +519,16 @@ export const StudentTable: React.FC<StudentTableProps> = ({ schoolClass, onUpdat
               ) : (
                 <>
                     <td className="px-1 py-1 whitespace-nowrap text-sm text-gray-500 bg-blue-50 border-l border-gray-200">
-                        <input type="number" min="0" max="20" value={student.evaluation.capaciteSportive} onChange={(e) => onUpdateStudent(student.id, 'evaluation.capaciteSportive', e.target.value === '' ? '' : Number(e.target.value))} className={evaluationInputClass(student.evaluation.capaciteSportive)} />
+                        <input type="number" min="0" max="20" value={student.evaluation.capaciteSportive} onChange={(e) => handleEvaluationChange(student.id, 'evaluation.capaciteSportive', e.target.value, 20)} className={evaluationInputClass(student.evaluation.capaciteSportive)} />
                     </td>
                     <td className="px-1 py-1 whitespace-nowrap text-sm text-gray-500 bg-blue-50">
-                        <input type="number" min="0" max="20" value={student.evaluation.habiliteMotrice} onChange={(e) => onUpdateStudent(student.id, 'evaluation.habiliteMotrice', e.target.value === '' ? '' : Number(e.target.value))} className={evaluationInputClass(student.evaluation.habiliteMotrice)} />
+                        <input type="number" min="0" max="20" value={student.evaluation.habiliteMotrice} onChange={(e) => handleEvaluationChange(student.id, 'evaluation.habiliteMotrice', e.target.value, 20)} className={evaluationInputClass(student.evaluation.habiliteMotrice)} />
                     </td>
                     <td className="px-1 py-1 whitespace-nowrap text-sm text-gray-500 bg-blue-50">
-                        <input type="number" min="0" max="20" value={student.evaluation.connaissancesConceptuelles} onChange={(e) => onUpdateStudent(student.id, 'evaluation.connaissancesConceptuelles', e.target.value === '' ? '' : Number(e.target.value))} className={evaluationInputClass(student.evaluation.connaissancesConceptuelles)} />
+                        <input type="number" min="0" max="20" value={student.evaluation.connaissancesConceptuelles} onChange={(e) => handleEvaluationChange(student.id, 'evaluation.connaissancesConceptuelles', e.target.value, 20)} className={evaluationInputClass(student.evaluation.connaissancesConceptuelles)} />
                     </td>
                     <td className="px-1 py-1 whitespace-nowrap text-sm text-gray-500 bg-blue-50">
-                        <input type="number" min="0" max="20" value={student.evaluation.connaissancesComportementales} onChange={(e) => onUpdateStudent(student.id, 'evaluation.connaissancesComportementales', e.target.value === '' ? '' : Number(e.target.value))} className={evaluationInputClass(student.evaluation.connaissancesComportementales)} />
+                        <input type="number" min="0" max="20" value={student.evaluation.connaissancesComportementales} onChange={(e) => handleEvaluationChange(student.id, 'evaluation.connaissancesComportementales', e.target.value, 20)} className={evaluationInputClass(student.evaluation.connaissancesComportementales)} />
                     </td>
                     <td className="px-2 py-2 whitespace-nowrap text-sm text-center font-bold text-gray-900 bg-blue-100 border-r border-gray-200">
                         {getNoteFinale(student.evaluation)} / 80

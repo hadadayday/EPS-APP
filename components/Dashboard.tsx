@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Icons } from './Icons';
 
@@ -38,7 +37,7 @@ export const Dashboard = ({ onNavigate }) => {
         <div className="flex flex-col items-center justify-center min-h-screen p-4 sm:p-6 lg:p-8">
             <header className="text-center mb-8">
                 <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-800 tracking-tight">
-                    EPS <span className="text-indigo-600">VIP</span>
+                    EPS <span className="text-indigo-600">Zone</span>
                 </h1>
                 <p className="mt-2 text-lg text-gray-500">Votre assistant personnel pour l'éducation physique et sportive</p>
             </header>
